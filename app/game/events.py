@@ -6,44 +6,14 @@ from app.extensions import db, socketio
 
 from .models import Room
 
-@socketio.event
-def create_room():
-    Room.delete_inactive_rooms()
 
-    room = Room(current_user.id) # type: ignore
-
-    room.players.append(current_user)
-
-    db.session.add(room)
-    db.session.commit()
-
-    emit('response', {
-        'id' : 'room_created', 
-        'message' : "room created", 
-        'data': room
-    }, broadcast=True)
-
-
-@socketio.event
-def join_room(room_id):
-    Room.delete_inactive_rooms()
+@socketio.on('player_joined', namespace='/game')
+def player_joined(data):
+    room_id = data['room_id']
 
     room = Room.query.filter_by(room_id=room_id).first()
+    players = room.players
 
-    if room is None:
-        emit('response', {
-            'id': 'room_join_failed',
-            'message': 'Room not found',
-            'data': None
-        })
-        return
+    print("ee")
 
-    if current_user not in room.players:
-        room.players.append(current_user)
-        db.session.commit()
-
-    emit('response', {
-        'id': 'room_joined',
-        'message': 'Room joined',
-        'data': room.room_id
-    }, broadcast=True)
+    emit('update_players', {'owner_id': room.owner_id, 'players': players, 'player_count': len(players)}, room=room_id, namespace='/game', broadcast=True)

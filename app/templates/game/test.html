@@ -1,0 +1,38 @@
+<script>
+    socket.on('response', function(msg, cb) {
+                console.log(msg)
+
+                switch (msg.id) {
+                    case "room_created":
+                        roomCreated(msg.data)
+
+                        break;
+                    case "room_joined":
+                        joinedRoom(msg.data)
+
+                        break;
+                }
+
+                alert(msg.data)
+            });
+
+            $('form#create').submit(function(event) {
+                socket.emit('create_room');  // Emit the create_room event
+                return false;
+            });
+
+            $('form#join').submit(function(event) {
+                socket.emit('join_room',  $('#join_room').val());
+                return false;
+            });
+</script>
+
+<div class="game-options" id="game-options">
+        <form id="create" method="POST" action='#'>
+            <input type="submit" value="Create room">
+        </form>
+        <form id="join" method="POST" action='#'>
+            <input type="text" name="join_room" id="join_room" placeholder="Room ID">
+            <input type="submit" value="Join room">
+        </form>
+    </div>

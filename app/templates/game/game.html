@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Flask-SocketIO Test</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    
+    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            var socket = io('/game');
+
+            socket.on('player_joined', function(data) {
+                console.log("hey")
+                updatePlayers(data)
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="game-room">
+        <span id="player-count">{{ room.players|length }}</span>/5
+
+        <div class="player-list" id="player-list">
+            {% for player in room.players %}
+                <div>{{ player.username }} {% if player.id == room.owner_id %}(Creator){% endif %}</div>
+            {% endfor %}
+        </div>
+
+        <div class="start-game" id="start-game">
+            <form id="start-game" method="POST" action='#'>
+                <input type="submit" value="Start game">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

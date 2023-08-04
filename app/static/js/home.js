@@ -1,5 +1,7 @@
-const room = document.getElementById('room')
+const gameOptions = document.getElementById('game-options');
+const gameRoom = document.getElementById('game-room');
 
 function roomCreated() {
-    room.style.display = 'block'
-}
+    gameOptions.style.display = 'none';
+    gameRoom.style.display = 'block';
+};

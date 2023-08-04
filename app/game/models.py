@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 
 from app.extensions import db
 
+from sqlalchemy import func
+
 import random
 
 class Room(db.Model):
@@ -27,11 +29,20 @@ class Room(db.Model):
                 
                 break
 
+    def to_dict(self):
+        return {
+            'room_id': self.room_id,
+            'owner_id': self.owner_id,
+            'players': [{'id': user.id, 'username': user.username} for user in self.players], # type: ignore
+            'started': self.started,
+            'last_active': self.last_active.isoformat()  # Convert datetime to ISO format
+        }
+
     @classmethod
     def delete_inactive_rooms(cls):
         one_hour_ago = datetime.utcnow() - timedelta(hours=1)
         inactive_rooms = cls.query.filter(
-            cls.players == [1],  # Check if players list has only 1 player
+            func.json_array_length(cls.players) <= 1,  # Check if players list has one player or less
             cls.last_active < one_hour_ago  # Check if last_active is older than 1 hour
         ).all()
 
