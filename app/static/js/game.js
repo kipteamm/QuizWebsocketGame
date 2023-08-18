@@ -16,7 +16,7 @@ function createPlayer(player, owner_id) {
 }
 
 
-function updatePlayers(data) {
+function updatePlayers(data, userID) {
     const playerCount = document.getElementById('player-count');
     const playerList = document.getElementById('player-list');
 
@@ -26,9 +26,9 @@ function updatePlayers(data) {
         playerList.appendChild(createPlayer(player, data.owner_id))
     })
 
-    playerCount.innerText = data.players.length();
+    playerCount.innerText = data.players.length;
 
-    if (data.player_count > 1) {
+    if (data.players.length > 1 && userID === data.owner_id) {
         const startGame = document.getElementById('start-game')
 
         startGame.style.display = 'block';

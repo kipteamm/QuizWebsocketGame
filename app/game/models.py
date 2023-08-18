@@ -41,9 +41,10 @@ class Room(db.Model):
     @classmethod
     def delete_inactive_rooms(cls):
         one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+
         inactive_rooms = cls.query.filter(
-            func.json_array_length(cls.players) <= 1,  # Check if players list has one player or less
-            cls.last_active < one_hour_ago  # Check if last_active is older than 1 hour
+            func.json_array_length(cls.players) == 1, 
+            cls.last_active < one_hour_ago 
         ).all()
 
         for room in inactive_rooms:

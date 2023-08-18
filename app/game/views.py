@@ -1,8 +1,10 @@
 from flask_login import login_required, current_user
 
-from flask import Blueprint, render_template, redirect, request
+from flask import Blueprint, render_template, redirect, request, flash
 
 from app.extensions import db, socketio
+
+from .functions import user_object
 
 from .models import Room
 
@@ -39,6 +41,10 @@ def home():
                 print("emitted")
 
                 return redirect(f'game?id={room.room_id}')
+            
+            flash('No room found with this ID.', 'success')
+
+            return render_template('game/home.html')
 
 
     return render_template('game/home.html')
@@ -60,4 +66,4 @@ def game():
 
         socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
 
-    return render_template('game/game.html', room=room.to_dict())
+    return render_template('game/game.html', user=user_object(current_user), room=room.to_dict()) # type: ignore

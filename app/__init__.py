@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from .auth.views import auth_blueprint
 from .auth.models import User
 
+from .game.functions import *
 from .game.events import socketio
 from .game.views import game_blueprint
 

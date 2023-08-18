@@ -17,4 +17,4 @@ poetry.lock
 pyproject.toml
 
 # Ignore site specific files
-app/data/database.db
+**/database.db

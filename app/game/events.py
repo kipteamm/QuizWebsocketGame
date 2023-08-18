@@ -35,7 +35,14 @@ def leave_game(data):
     leave_room(room_id)
 
     room = Room.query.filter_by(room_id=room_id).first()
-    
+
+    room.players.remove(current_user)
+
+    if current_user.id == room.owner_id: # type: ignore
+        db.session.delete(room)
+
+    db.session.commit()
+
     players = []
 
     for player in room.players:

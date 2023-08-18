@@ -15,7 +15,12 @@
             var socket = io('/game');
 
             $('form#leave').submit(function(event) {
-                socket.emit('leave_game', {room_id: '{{ room.room_id }}'});  // Emit the create_room event
+                console.log("here")
+
+                window.location.href='/home';
+
+                socket.emit('leave_game', {room_id: '{{ room.room_id }}'});
+
                 return false;
             });
 
@@ -24,7 +29,7 @@
             });
 
             socket.on('update_players', function(data) {
-                updatePlayers(data)
+                updatePlayers(data, {{ user.user_id }})
             });
         });
     </script>
