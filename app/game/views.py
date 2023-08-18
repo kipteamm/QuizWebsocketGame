@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, redirect, request
-
 from flask_login import login_required, current_user
+
+from flask import Blueprint, render_template, redirect, request
 
 from app.extensions import db, socketio
 
@@ -34,7 +34,7 @@ def home():
             room = Room.query.filter_by(room_id=request.form.get('join_room')).first()
 
             if room:
-                socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
+                socketio.emit('player_joined', {'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
 
                 print("emitted")
 

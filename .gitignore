@@ -6,6 +6,7 @@ venv/
 # Ignore any pycaches
 /__pycache__
 __pycache__/
+**/__pycache__/
 
 # Ignore replit files (can be removed soon)
 .replit

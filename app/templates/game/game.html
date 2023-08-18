@@ -14,14 +14,17 @@
         $(document).ready(function() {
             var socket = io('/game');
 
-            socket.on('player_joined', function(data) {
-                console.log("hey")
-                updatePlayers(data)
+            $('form#leave').submit(function(event) {
+                socket.emit('leave_game', {room_id: '{{ room.room_id }}'});  // Emit the create_room event
+                return false;
             });
 
-            $('form#leave').submit(function(event) {
-                socket.emit('leave_game', {room: $('#join_room').val()});
-                return false;
+            socket.on('connect', function() {
+                socket.emit('join_game', {room_id: '{{ room.room_id }}'});
+            });
+
+            socket.on('update_players', function(data) {
+                updatePlayers(data)
             });
         });
     </script>
@@ -34,11 +37,7 @@
 
         <span id="player-count">{{ room.players|length }}</span>/5
 
-        <div class="player-list" id="player-list">
-            {% for player in room.players %}
-                <div>{{ player.username }} {% if player.id == room.owner_id %}(Creator){% endif %}</div>
-            {% endfor %}
-        </div>
+        <div class="player-list" id="player-list"></div>
 
         <div class="start-game" id="start-game">
             <form id="start-game" method="POST" action='#'>
