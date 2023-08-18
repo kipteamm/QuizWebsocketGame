@@ -12,7 +12,6 @@ game_blueprint = Blueprint('game', __name__)
 @game_blueprint.route('/home', methods=['GET', 'POST'])
 @login_required
 def home():
-
     if request.method == "POST":
         if 'create_room' in request.form:
             room = Room.query.filter_by(owner_id=current_user.id).first() # type: ignore
@@ -36,6 +35,8 @@ def home():
 
             if room:
                 socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
+
+                print("emitted")
 
                 return redirect(f'game?id={room.room_id}')
 

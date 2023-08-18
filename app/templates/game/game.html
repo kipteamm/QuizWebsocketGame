@@ -18,11 +18,20 @@
                 console.log("hey")
                 updatePlayers(data)
             });
+
+            $('form#leave').submit(function(event) {
+                socket.emit('leave_game', {room: $('#join_room').val()});
+                return false;
+            });
         });
     </script>
 </head>
 <body>
     <div class="game-room">
+        <form id="leave" method="POST" action='#'>
+            <input type="submit" value="Leave game">
+        </form>
+
         <span id="player-count">{{ room.players|length }}</span>/5
 
         <div class="player-list" id="player-list">

@@ -1,0 +1,19 @@
+# Ignore virtual environments
+/.venv
+venv/
+.venv
+
+# Ignore any pycaches
+/__pycache__
+__pycache__/
+
+# Ignore replit files (can be removed soon)
+.replit
+.breakpoints
+replit.nix
+
+poetry.lock
+pyproject.toml
+
+# Ignore site specific files
+app/data/database.db

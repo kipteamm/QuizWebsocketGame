@@ -13,6 +13,8 @@ function updatePlayers(data) {
     const playerCount = document.getElementById('player-count');
     const playerList = document.getElementById('player-list');
 
+    console.log(data)
+
     data.players.forEach(function(player) {
         playerList.appendChild(createPlayer(player, data.owner_id))
     })
