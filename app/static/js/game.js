@@ -34,3 +34,39 @@ function updatePlayers(data, userID) {
         startGame.style.display = 'block';
     }
 }
+
+
+function createQuestion(question) {
+    const questionElement = document.createElement('form')
+
+    questionElement.classList.add('question-wrapper')
+    questionElement.action = '#'
+    questionElement.method = "POST"
+    questionElement.id = 'question'   
+
+    questionElement.innerHTML = `
+        <span class="question">${question.question}</span>
+    `
+
+    const answers = question.incorrect_answers
+    answers.push(question.correct_answer)
+
+    answers.forEach(answer => {
+        const answerElement = document.createElement('input')
+
+        answerElement.type = 'submit'
+        answerElement.value = answer
+
+        questionElement.appendChild(answerElement)
+    })
+
+    return questionElement
+}
+
+
+const gameRoom = document.getElementById('game-room');
+
+function question(question) {
+    gameRoom.innerHTML = '';
+    gameRoom.appendChild(createQuestion(question))
+}

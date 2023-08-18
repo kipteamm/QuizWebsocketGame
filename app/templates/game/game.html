@@ -8,21 +8,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
     
-    <script src="{{ url_for('static', filename='js/game.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/game.js') }}" defer></script>
 
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             var socket = io('/game');
 
             $('form#leave').submit(function(event) {
-                console.log("here")
-
                 window.location.href='/home';
 
                 socket.emit('leave_game', {room_id: '{{ room.room_id }}'});
 
                 return false;
             });
+
+            $('form#startgame').submit(function(event) {
+                socket.emit('start_game', {room_id: '{{ room.room_id }}'})
+
+                return false;
+            })
 
             socket.on('connect', function() {
                 socket.emit('join_game', {room_id: '{{ room.room_id }}'});
@@ -31,21 +35,35 @@
             socket.on('update_players', function(data) {
                 updatePlayers(data, {{ user.user_id }})
             });
+
+            socket.on('kick_all', function(data) {
+                console.log('kick_all')
+
+                window.location.href='/home';
+            })
+
+            socket.on('starting', function() {
+                gameRoom.innerHTML = '';
+            })
+
+            socket.on('question', function(data) {
+                question(data)
+            })
         });
     </script>
 </head>
 <body>
-    <div class="game-room">
-        <form id="leave" method="POST" action='#'>
-            <input type="submit" value="Leave game">
-        </form>
+    <form id="leave" method="POST" action='#'>
+        <input type="submit" value="Leave game">
+    </form>
 
+    <div class="game-room" id="game-room">
         <span id="player-count">{{ room.players|length }}</span>/5
 
         <div class="player-list" id="player-list"></div>
 
         <div class="start-game" id="start-game">
-            <form id="start-game" method="POST" action='#'>
+            <form id="startgame" method="POST" action='#'>
                 <input type="submit" value="Start game">
             </form>
         </div>
