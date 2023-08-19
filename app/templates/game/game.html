@@ -26,7 +26,13 @@
                 socket.emit('start_game', {room_id: '{{ room.room_id }}'})
 
                 return false;
-            })
+            });
+
+            $(document).on('submit', 'form#answer', function(event) {
+                socket.emit('answer', {room_id: '{{ room.room_id }}', answer: $(this).find('input[type="submit"]:focus').val()})
+
+                return false;
+            });
 
             socket.on('connect', function() {
                 socket.emit('join_game', {room_id: '{{ room.room_id }}'});
@@ -43,7 +49,7 @@
             })
 
             socket.on('starting', function() {
-                gameRoom.innerHTML = '';
+                startGame()
             })
 
             socket.on('question', function(data) {
@@ -58,7 +64,7 @@
     </form>
 
     <div class="game-room" id="game-room">
-        <span id="player-count">{{ room.players|length }}</span>/5
+        <span id="player-count">{{ room.players|length }}</span>/3
 
         <div class="player-list" id="player-list"></div>
 

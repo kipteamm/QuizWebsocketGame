@@ -36,13 +36,16 @@ def home():
             room = Room.query.filter_by(room_id=request.form.get('join_room')).first()
 
             if room:
-                socketio.emit('player_joined', {'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
+                if len(room.players) == 3:
+                    flash('This room is full.', 'error')
 
-                print("emitted")
+                    return render_template('game/home.html')
+
+                #socketio.emit('player_joined', {'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
 
                 return redirect(f'game?id={room.room_id}')
             
-            flash('No room found with this ID.', 'success')
+            flash('No room found with this ID.', 'error')
 
             return render_template('game/home.html')
 
@@ -61,9 +64,14 @@ def game():
         return redirect('home')
     
     if current_user not in room.players:
+        if len(room.players) == 3:
+            flash('This room is full.', 'error')
+
+            return render_template('game/home.html')
+        
         room.players.append(current_user)
         db.session.commit()
 
-        socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
+        #socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
 
     return render_template('game/game.html', user=user_object(current_user), room=room.to_dict()) # type: ignore

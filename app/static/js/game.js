@@ -36,13 +36,27 @@ function updatePlayers(data, userID) {
 }
 
 
+function startGame() {
+    let seconds = 0;
+
+    const interval = setInterval(() => {
+        gameRoom.innerHTML = (5 - seconds);
+
+        seconds++;
+
+        if (seconds >= 5) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
+
+
 function createQuestion(question) {
     const questionElement = document.createElement('form')
-
-    questionElement.classList.add('question-wrapper')
-    questionElement.action = '#'
+    
+    questionElement.id = 'answer' 
     questionElement.method = "POST"
-    questionElement.id = 'question'   
+    questionElement.classList.add('question-wrapper')  
 
     questionElement.innerHTML = `
         <span class="question">${question.question}</span>
@@ -69,4 +83,6 @@ const gameRoom = document.getElementById('game-room');
 function question(question) {
     gameRoom.innerHTML = '';
     gameRoom.appendChild(createQuestion(question))
+
+    answer = question.answer
 }

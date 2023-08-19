@@ -11,6 +11,9 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(25), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     is_active = db.Column(db.Boolean, default=True)
+
+    # Current game
+    points = db.Column(db.Integer, default=0)
     
     # Statistics
     victories = db.Column(db.Integer, default=0)

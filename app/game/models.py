@@ -4,6 +4,8 @@ from app.extensions import db
 
 from sqlalchemy import func
 
+from typing import Optional
+
 import random
 
 class Room(db.Model):
@@ -11,6 +13,8 @@ class Room(db.Model):
 
     room_id = db.Column(db.Integer, unique=True, primary_key=True)
     owner_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    question_index = db.Column(db.Integer, default=1)
 
     players = db.relationship('User', secondary='room_players', backref=db.backref('rooms', lazy='dynamic'))
 
@@ -28,6 +32,13 @@ class Room(db.Model):
                 self.room_id = room_id
                 
                 break
+
+    def get_player(self, user_id: int) -> Optional['RoomPlayers']:
+        for player in self.players: # type: ignore
+            if player.id == user_id:
+                return player
+            
+        return None
 
     def to_dict(self):
         return {
@@ -51,6 +62,36 @@ class Room(db.Model):
             db.session.delete(room)
 
         db.session.commit()
+
+
+class MultipleChoiceQuestion(db.Model):
+    __tablename__ = 'multiple_choice_question'
+
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), primary_key=True)
+    index = db.Column(db.Integer)
+
+    question = db.Column(db.Text)
+    answer = db.Column(db.Text)
+
+    answers = db.relationship('User', secondary='room_players', backref=db.backref('rooms', lazy='dynamic'))
+
+    creation_timestamp = db.Column(db.Float)
+
+    def __init__(self, room_id: int, question_index: int, question: str, answer: str, creation_timestamp: float):
+        self.room_id = room_id
+        self.index = question_index
+        self.question = question
+        self.answer = answer
+        self.creation_timestamp = creation_timestamp
+
+    def to_dict(self):
+        return {
+            'room_id': self.room_id,
+            'index': self.index,
+            'question': self.question,
+            'answer': self.answer
+        }
+    
 
 class RoomPlayers(db.Model):
     __tablename__ = 'room_players'
