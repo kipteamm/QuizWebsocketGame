@@ -6,7 +6,7 @@ from flask_socketio import emit
 
 from app.extensions import db, socketio
 
-from .models import Room, MultipleChoiceQuestion, RoomPlayers
+from .models import Room, MultipleChoiceQuestion, Answer
 
 import requests
 import time
@@ -92,9 +92,9 @@ def start_game(data):
 
         emit('question', question, room=room_id, namespace='/game', broadcast=True)
 
-        time.sleep(30)
+        time.sleep(15)
 
-        emit('time_is_up', room=room_id, namespace='/game', broadcast=True)
+        emit('question_end', room=room_id, namespace='/game', broadcast=True)
 
 
 @socketio.on('answer', namespace='/game')
@@ -107,32 +107,36 @@ def answer(data):
         points = 30 - round(time.time() - question.creation_timestamp)
 
         if data['answer'] == question.answer:
-            if len(question.answers) == 0:
+            user_answers = Answer.query.filter_by(room=room.room_id, index=room.question_index).count()
+
+            if user_answers == 0:
                 points += 30
 
-            elif len(question.answers) == 1:
+            elif user_answers == 1:
                 points += 20
 
-            elif len(question.answers) == 2:
+            elif user_answers == 2:
                 points += 10
 
-            question.answers.append(current_user)
         else:
             points = 0
 
+        user_answer = Answer(room.room_id, current_user.id, room.question_index) # type: ignore
+
         current_user.points += points # type: ignore
 
+        db.session.add(user_answer)
         db.session.commit()
 
 
-@socketio.on('time_is_up', namespace='/game')
-def time_is_up(data):
+@socketio.on('question_end', namespace='/game')
+def question_end(data):
     room = Room.query.filter_by(room_id=data['room_id']).first()
 
-    question = MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first()
-
     for player in room.players:
-        if not player in question.players:
+        answer = Answer.query.filter_by(room_id=room.room_id, user_id=player.id, index=room.question_index).first()
+
+        if not answer:
             player.points += 0
 
     room.question_index += 1

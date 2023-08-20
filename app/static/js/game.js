@@ -1,4 +1,4 @@
-function createPlayer(player, owner_id) {
+function createPlayer(player, ownerID) {
     const playerElement = document.createElement('div')
 
     playerElement.classList.add('player')
@@ -6,11 +6,11 @@ function createPlayer(player, owner_id) {
 
     let creator = ''
 
-    if (player.user_id == owner_id) {
+    if (player.user_id == ownerID) {
         creator = ' (Creator)'
     }
 
-    playerElement.innerHTML = player.username + creator
+    playerElement.innerHTML = player.username + creator + ` [${player.points}]`
 
     return playerElement
 }
@@ -34,6 +34,9 @@ function updatePlayers(data, userID) {
         startGame.style.display = 'block';
     }
 }
+
+
+const gameRoom = document.getElementById('game-room');
 
 
 function startGame() {
@@ -77,8 +80,6 @@ function createQuestion(question) {
     return questionElement
 }
 
-
-const gameRoom = document.getElementById('game-room');
 
 function question(question) {
     gameRoom.innerHTML = '';

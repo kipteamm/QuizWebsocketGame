@@ -64,6 +64,13 @@ class Room(db.Model):
         db.session.commit()
 
 
+class RoomPlayers(db.Model):
+    __tablename__ = 'room_players'
+
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+
 class MultipleChoiceQuestion(db.Model):
     __tablename__ = 'multiple_choice_question'
 
@@ -72,8 +79,6 @@ class MultipleChoiceQuestion(db.Model):
 
     question = db.Column(db.Text)
     answer = db.Column(db.Text)
-
-    answers = db.relationship('User', secondary='room_players', backref=db.backref('rooms', lazy='dynamic'))
 
     creation_timestamp = db.Column(db.Float)
 
@@ -91,10 +96,17 @@ class MultipleChoiceQuestion(db.Model):
             'question': self.question,
             'answer': self.answer
         }
-    
 
-class RoomPlayers(db.Model):
-    __tablename__ = 'room_players'
+
+class Answer(db.Model):
+    __tablename__ = "answer"
 
     room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    index = db.Column(db.Integer)
+
+    def __init__(self, room_id: int, user_id: int, index: int):
+        self.room_id = room_id
+        self.user_id = user_id
+        self.index = index
