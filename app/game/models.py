@@ -2,9 +2,7 @@ from datetime import datetime, timedelta
 
 from app.extensions import db
 
-from sqlalchemy import func
-
-from typing import Optional
+from sqlalchemy import func, or_, and_
 
 import random
 
@@ -33,12 +31,17 @@ class Room(db.Model):
                 
                 break
 
-    def get_player(self, user_id: int) -> Optional['RoomPlayers']:
+    def get_players(self):
+        players = []
+
         for player in self.players: # type: ignore
-            if player.id == user_id:
-                return player
-            
-        return None
+            players.append({
+                'user_id' : player.id,
+                'username' : player.username,
+                'points' : player.points
+            })
+
+        return players
 
     def to_dict(self):
         return {
@@ -53,12 +56,22 @@ class Room(db.Model):
     def delete_inactive_rooms(cls):
         one_hour_ago = datetime.utcnow() - timedelta(hours=1)
 
-        inactive_rooms = cls.query.filter(
-            func.json_array_length(cls.players) == 1, 
-            cls.last_active < one_hour_ago 
-        ).all()
+        inactive_rooms_query = cls.query.filter(
+            or_ (
+                and_(
+                    func.json_array_length(cls.players) == 1,
+                    cls.last_active < one_hour_ago
+                ),
+                func.json_array_length(cls.players) == 0
+            )
+        )
+
+        inactive_rooms = inactive_rooms_query.all()
 
         for room in inactive_rooms:
+            MultipleChoiceQuestion.query.filter_by(room_id=room.room_id).delete()
+            Answer.query.filter_by(room_id=room.room_id).delete()
+    
             db.session.delete(room)
 
         db.session.commit()

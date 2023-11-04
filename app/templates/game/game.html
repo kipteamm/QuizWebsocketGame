@@ -52,12 +52,26 @@
                 startGame()
             })
 
+            socket.on('new_question', function(data) {
+                console.log("new question received")
+                console.log(data.owner_id, {{ room.owner_id }})
+
+                if (data.owner_id === {{ room.owner_id }}) {
+                    socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
+                    console.log('question asked')
+                }
+            })
+
             socket.on('question', function(data) {
                 question(data)
             })
 
             socket.on('question_end', function() {
                 gameRoom.innerHTML = '';
+
+                socket.emit('end_question', {room_id: '{{ room.room_id }}'});
+
+                console.log('question end')
             })
         });
     </script>

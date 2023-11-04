@@ -52,6 +52,8 @@ def leave_game(data):
 
             db.session.delete(room)
 
+            emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+
         db.session.commit()
 
         players = []
@@ -80,6 +82,18 @@ def start_game(data):
 
     room.started = True
 
+    emit('new_question', room=room.room_id, namespace='/game', broadcast=True)
+
+
+@socketio.on('ask_question', namespace='/game')
+def ask_question(data):
+    print('ask_question received')
+
+    room = Room.query.filter_by(room_id=data['room_id']).first()
+
+    if MultipleChoiceQuestion.query.filter_by(room.room_id, room.question_index):
+        return
+
     response = requests.get('https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple')
 
     if response.ok:
@@ -90,11 +104,11 @@ def start_game(data):
         db.session.add(question_object)
         db.session.commit()
 
-        emit('question', question, room=room_id, namespace='/game', broadcast=True)
+        emit('question', question, room=room.room_id, namespace='/game', broadcast=True)
 
         time.sleep(15)
 
-        emit('question_end', room=room_id, namespace='/game', broadcast=True)
+        emit('question_end', room=room.room_id, namespace='/game', broadcast=True)
 
 
 @socketio.on('answer', namespace='/game')
@@ -107,7 +121,7 @@ def answer(data):
         points = 30 - round(time.time() - question.creation_timestamp)
 
         if data['answer'] == question.answer:
-            user_answers = Answer.query.filter_by(room=room.room_id, index=room.question_index).count()
+            user_answers = Answer.query.filter_by(room_id=room.room_id, index=room.question_index).count()
 
             if user_answers == 0:
                 points += 30
@@ -129,8 +143,10 @@ def answer(data):
         db.session.commit()
 
 
-@socketio.on('question_end', namespace='/game')
-def question_end(data):
+@socketio.on('end_question', namespace='/game')
+def end_question(data):
+    print('question ended')
+
     room = Room.query.filter_by(room_id=data['room_id']).first()
 
     for player in room.players:
@@ -139,4 +155,9 @@ def question_end(data):
         if not answer:
             player.points += 0
 
+    emit('update_players', {'owner_id': room.owner_id, 'players': room.get_players()}, room=room.room_id, namespace='/game', broadcast=True)
+
     room.question_index += 1
+
+    if room.question_index < 4:
+        emit('new_question', room=room.room_id, namespace='/game', broadcast=True)

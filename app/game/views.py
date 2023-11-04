@@ -2,11 +2,11 @@ from flask_login import login_required, current_user
 
 from flask import Blueprint, render_template, redirect, request, flash
 
-from app.extensions import db, socketio
+from app.extensions import db
 
 from .functions import user_object
 
-from .models import Room
+from .models import Room, MultipleChoiceQuestion, Answer
 
 
 game_blueprint = Blueprint('game', __name__)
@@ -41,8 +41,6 @@ def home():
 
                     return render_template('game/home.html')
 
-                #socketio.emit('player_joined', {'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
-
                 return redirect(f'game?id={room.room_id}')
             
             flash('No room found with this ID.', 'error')
@@ -63,6 +61,8 @@ def game():
     if room is None:
         return redirect('home')
     
+    current_user.points = 0
+    
     if current_user not in room.players:
         if len(room.players) == 3:
             flash('This room is full.', 'error')
@@ -72,6 +72,16 @@ def game():
         room.players.append(current_user)
         db.session.commit()
 
-        #socketio.emit('player_joined', {'room_id': room.room_id, 'player_id': current_user.id}, room=room.room_id, namespace='/game') # type: ignore
-
     return render_template('game/game.html', user=user_object(current_user), room=room.to_dict()) # type: ignore
+
+
+@game_blueprint.route('/test', methods=['GET'])
+@login_required
+def test():
+    Room.query.delete()
+    MultipleChoiceQuestion.query.delete()
+    Answer.query.delete()
+    
+    db.session.commit()
+
+    return '<h1>success</h1>'
