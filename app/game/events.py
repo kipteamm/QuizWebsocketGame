@@ -98,7 +98,7 @@ def register_events(socketio: SocketIO):
 
         db.session.commit()
 
-        emit('new_question', room=room_id, namespace='/game', broadcast=True, callback=ack)
+        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True, callback=ack)
 
 
     @socketio.on('ask_question', namespace='/game')
@@ -110,8 +110,6 @@ def register_events(socketio: SocketIO):
         room = Room.query.filter_by(room_id=room_id).first()
 
         if MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first():
-            print('here 1')
-
             return
 
         response = requests.get('https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple')
@@ -133,8 +131,6 @@ def register_events(socketio: SocketIO):
             emit('question_end', room=room_id, namespace='/game', broadcast=True)
         
         else:
-            print('here 2')
-
             emit('kick_all', room=room_id, namespace='/game', broadcast=True)
 
 
@@ -194,6 +190,4 @@ def register_events(socketio: SocketIO):
         room.question_index += 1
 
         if room.question_index < 4:
-            print('new question')
-
-            emit('new_question', room=room_id, namespace='/game', broadcast=True)
+            emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)

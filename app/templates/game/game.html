@@ -29,6 +29,8 @@
             });
 
             $(document).on('submit', 'form#answer', function(event) {
+                console.log('answer submitted');
+
                 socket.emit('answer', {room_id: '{{ room.room_id }}', answer: $(this).find('input[type="submit"]:focus').val()})
 
                 return false;
@@ -50,15 +52,13 @@
 
             socket.on('starting', function() {
                 startGame()
-
-                /*
-                setTimeout(() => {
-                    socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
-                }, 5000)
-                */
             })
 
             socket.on('new_question', function(data) {
+                if (data.owner_id != {{ user.user_id }}) {
+                    return;
+                }
+
                 socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
 
                 console.log('question asked')
@@ -75,7 +75,7 @@
 
                 gameRoom.innerHTML = '';
 
-                socket.emit('end_question', {room_id: '{{ room.room_id }}'});
+                socket.emit('end_question', {room_id: '{{ room.room_id }}', user_id: {{ user.user_id }}});
             })
         });
     </script>
