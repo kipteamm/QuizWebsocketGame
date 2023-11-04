@@ -5,6 +5,8 @@ from app.extensions import db
 from sqlalchemy import func, or_, and_
 
 import random
+import time
+
 
 class Room(db.Model):
     __tablename__ = 'room'
@@ -87,7 +89,8 @@ class RoomPlayers(db.Model):
 class MultipleChoiceQuestion(db.Model):
     __tablename__ = 'multiple_choice_question'
 
-    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), primary_key=True)
+    question_id = db.Column(db.Integer, unique=True, primary_key=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'))
     index = db.Column(db.Integer)
 
     question = db.Column(db.Text)
@@ -96,6 +99,7 @@ class MultipleChoiceQuestion(db.Model):
     creation_timestamp = db.Column(db.Float)
 
     def __init__(self, room_id: int, question_index: int, question: str, answer: str, creation_timestamp: float):
+        self.question_id = int(str(time.time()).replace('.', ''))
         self.room_id = room_id
         self.index = question_index
         self.question = question

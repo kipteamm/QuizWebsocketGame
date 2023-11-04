@@ -50,28 +50,32 @@
 
             socket.on('starting', function() {
                 startGame()
+
+                setTimeout(() => {
+                    socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
+                }, 5000)
             })
 
-            socket.on('new_question', function(data) {
+            socket.on('new_question', function() {
                 console.log("new question received")
-                console.log(data.owner_id, {{ room.owner_id }})
 
-                if (data.owner_id === {{ room.owner_id }}) {
-                    socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
-                    console.log('question asked')
-                }
+                socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
+
+                console.log('question asked')
             })
 
             socket.on('question', function(data) {
+                console.log('question received')
+
                 question(data)
             })
 
             socket.on('question_end', function() {
+                console.log('question end received')
+
                 gameRoom.innerHTML = '';
 
                 socket.emit('end_question', {room_id: '{{ room.room_id }}'});
-
-                console.log('question end')
             })
         });
     </script>

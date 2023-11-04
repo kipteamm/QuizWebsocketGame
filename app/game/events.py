@@ -82,8 +82,6 @@ def start_game(data):
 
     room.started = True
 
-    emit('new_question', room=room.room_id, namespace='/game', broadcast=True)
-
 
 @socketio.on('ask_question', namespace='/game')
 def ask_question(data):
@@ -91,7 +89,9 @@ def ask_question(data):
 
     room = Room.query.filter_by(room_id=data['room_id']).first()
 
-    if MultipleChoiceQuestion.query.filter_by(room.room_id, room.question_index):
+    if MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first():
+        print('here 1')
+
         return
 
     response = requests.get('https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple')
@@ -104,11 +104,18 @@ def ask_question(data):
         db.session.add(question_object)
         db.session.commit()
 
+        print('question sent')
+
         emit('question', question, room=room.room_id, namespace='/game', broadcast=True)
 
         time.sleep(15)
 
         emit('question_end', room=room.room_id, namespace='/game', broadcast=True)
+    
+    else:
+        print('here 2')
+
+        emit('kick_all', room=room.room_id, namespace='/game', broadcast=True)
 
 
 @socketio.on('answer', namespace='/game')
@@ -160,4 +167,6 @@ def end_question(data):
     room.question_index += 1
 
     if room.question_index < 4:
+        print('new question')
+
         emit('new_question', room=room.room_id, namespace='/game', broadcast=True)
