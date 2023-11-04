@@ -141,8 +141,6 @@ def register_events(socketio: SocketIO):
         question = MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first()
 
         if question:
-            room.question_index = room.question_index + 1
-
             points = 30 - round(time.time() - question.creation_timestamp)
 
             user_answers = Answer.query.filter_by(room_id=room.room_id, index=room.question_index).count()
@@ -187,7 +185,9 @@ def register_events(socketio: SocketIO):
 
         emit('update_players', {'owner_id': room.owner_id, 'players': room.get_players()}, room=room_id, namespace='/game', broadcast=True)
 
-        room.question_index += 1
+        room.question_index = room.question_index + 1
+
+        db.session.commit()
 
         if room.question_index < 4:
             emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
