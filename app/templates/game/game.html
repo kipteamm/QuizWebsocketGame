@@ -59,10 +59,6 @@
             })
 
             socket.on('new_question', function(data) {
-                console.log("new question received")
-
-                console.log(data)
-
                 socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
 
                 console.log('question asked')

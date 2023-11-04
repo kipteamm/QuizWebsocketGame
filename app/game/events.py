@@ -58,8 +58,11 @@ def register_events(socketio: SocketIO):
             room.players.remove(current_user)
 
             if current_user.id == room.owner_id: # type: ignore
-                for question in MultipleChoiceQuestion.query.filter_by(room_id=room_id):
+                for question in MultipleChoiceQuestion.query.filter_by(room_id=room.room_id):  
                     db.session.delete(question)
+
+                for answer in Answer.query.filter_by(room_id=room.room_id):
+                    db.session.delete(answer)
 
                 db.session.delete(room)
 
@@ -95,9 +98,7 @@ def register_events(socketio: SocketIO):
 
         db.session.commit()
 
-        print('new question')
-
-        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True, callback=ack)
+        emit('new_question', room=room_id, namespace='/game', broadcast=True, callback=ack)
 
 
     @socketio.on('ask_question', namespace='/game')
@@ -120,10 +121,10 @@ def register_events(socketio: SocketIO):
 
             question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question['question'], question['correct_answer'], time.time())
 
+            room.question_index = room.question_index + 1
+
             db.session.add(question_object)
             db.session.commit()
-
-            print('question sent')
 
             emit('question', question, room=room_id, namespace='/game', broadcast=True)
 
@@ -139,16 +140,18 @@ def register_events(socketio: SocketIO):
 
     @socketio.on('answer', namespace='/game')
     def answer(data):
-        room = Room.query.filter_by(room_id=data['room_id']).first()
+        room_id = data['room_id']
+
+        room = Room.query.filter_by(room_id=room_id).first()
 
         question = MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first()
 
         if question:
             points = 30 - round(time.time() - question.creation_timestamp)
 
-            if data['answer'] == question.answer:
-                user_answers = Answer.query.filter_by(room_id=room.room_id, index=room.question_index).count()
+            user_answers = Answer.query.filter_by(room_id=room.room_id, index=room.question_index).count()
 
+            if data['answer'] == question.answer:
                 if user_answers == 0:
                     points += 30
 
@@ -168,11 +171,14 @@ def register_events(socketio: SocketIO):
             db.session.add(user_answer)
             db.session.commit()
 
+            print(user_answers, room.players.count())
+
+            if user_answers == room.players.count() - 1:
+                emit('question_end', room=room_id, namespace='/game', broadcast=True)
+
 
     @socketio.on('end_question', namespace='/game')
     def end_question(data):
-        print('question ended')
-
         room_id = data['room_id']
 
         room = Room.query.filter_by(room_id=room_id).first()

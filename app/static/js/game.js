@@ -1,3 +1,6 @@
+let started = false;
+
+
 function createPlayer(player, ownerID) {
     const playerElement = document.createElement('div')
 
@@ -28,10 +31,12 @@ function updatePlayers(data, userID) {
 
     playerCount.innerText = data.players.length;
 
-    if (data.players.length > 1 && userID === data.owner_id) {
+    if (data.players.length > 1 && userID === data.owner_id && !started) {
         const startGame = document.getElementById('start-game')
 
         startGame.style.display = 'block';
+
+        started = true
     }
 }
 
