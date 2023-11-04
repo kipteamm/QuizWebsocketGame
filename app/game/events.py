@@ -12,6 +12,10 @@ import requests
 import time
 
 
+def ack():
+    print('message was received!')
+
+
 @socketio.on('join_game', namespace='/game')
 def join_game(data):
     room_id = data['room_id']
@@ -81,6 +85,12 @@ def start_game(data):
     room = Room.query.filter_by(room_id=room_id).first()
 
     room.started = True
+
+    db.session.commit()
+
+    print('new question')
+
+    emit('new_question', {'owner_id' : room.owner_id}, room=room.room_id, namespace='/game', broadcast=True, callback=ack)
 
 
 @socketio.on('ask_question', namespace='/game')

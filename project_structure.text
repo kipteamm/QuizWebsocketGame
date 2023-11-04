@@ -1,0 +1,44 @@
+- .gitignore
+- app
+  - auth
+    - models.py
+    - views.py
+    - __init__.py
+    - __pycache__
+  - data
+    - database.db
+  - extensions.py
+  - game
+    - events.py
+    - functions.py
+    - models.py
+    - views.py
+    - __init__.py
+    - __pycache__
+  - main
+    - views.py
+    - __init__.py
+    - __pycache__
+  - static
+    - css
+      - game.css
+      - home.css
+    - js
+      - game.js
+      - home.js
+  - templates
+    - auth
+      - login.html
+      - register.html
+    - base.html
+    - game
+      - game.html
+      - home.html
+      - test.html
+    - main
+      - index.html
+  - __init__.py
+  - __pycache__
+- app.py
+- migrations
+- requirements.txt
