@@ -4,8 +4,15 @@ venv/
 .venv
 
 # Ignore any pycaches
-**/__pycache__/
+**/__pycache__/*
 **/database.db
 
 # Ignore migrations folder
-app/migrations/
+migrations/*
+
+# Replit
+.pythonlibs
+.replit
+poetry.lock
+pyproject.toml
+**/__init__.py

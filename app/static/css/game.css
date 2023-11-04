@@ -26,6 +26,10 @@
 
 .player .player-top {
     font-size: 20px;
+    display: flex;
+}
+.player .player-top span:first-child {
+    flex: 1;
 }
 .player p {
     font-size: 14px;

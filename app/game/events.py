@@ -105,12 +105,12 @@ def register_events(socketio: SocketIO):
         if MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first():
             return
 
-        response = requests.get('https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple')
+        response = requests.get('https://the-trivia-api.com/v2/questions?limit=1')
 
         if response.ok:
-            question = response.json()['results'][0]
+            question = response.json()[0]
 
-            question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question['question'], question['correct_answer'], time.time())
+            question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question['question']['text'], question['correctAnswer'], time.time())
 
             db.session.add(question_object)
             db.session.commit()

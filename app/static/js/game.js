@@ -15,7 +15,8 @@ function createPlayer(player, ownerID) {
 
     playerElement.innerHTML = `
         <div class="player-top">
-            ${player.username} <span class="points">${player.points}</span>
+            <span>${player.username}</span>
+            <span class="points">${player.points}</span>
         </div> 
         <p>
             (${role})
@@ -101,11 +102,11 @@ function createQuestion(question) {
 
     questionElement.innerHTML = `
         <div class="timer"></div>
-        <p class="question">${question.question}</p>
+        <p class="question">${question.question.text}</p>
     `
 
-    let answers = question.incorrect_answers
-    answers.push(question.correct_answer)
+    let answers = question.incorrectAnswers
+    answers.push(question.correctAnswer)
 
     answers = answers.sort((a, b) => 0.5 - Math.random());
 
