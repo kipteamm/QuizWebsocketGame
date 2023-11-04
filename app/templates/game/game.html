@@ -12,7 +12,7 @@
 
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
-            var socket = io('/game');
+            const socket = io('/game');
 
             $('form#leave').submit(function(event) {
                 window.location.href='/home';

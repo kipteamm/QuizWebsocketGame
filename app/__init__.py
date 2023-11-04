@@ -4,16 +4,17 @@ from flask_login import LoginManager
 
 from flask_migrate import Migrate
 
-from .auth.views import auth_blueprint
+from .game.events import register_events as register_game_events
+
 from .auth.models import User
+from .auth.views import auth_blueprint
 
 from .game.functions import *
-from .game.events import socketio
 from .game.views import game_blueprint
 
 from .main.views import main_blueprint
 
-from .extensions import db
+from .extensions import db, socketio
 
 def create_app():
     app = Flask(__name__)
@@ -44,5 +45,6 @@ def create_app():
         return redirect(url_for('auth.login'))
 
     socketio.init_app(app)
+    register_game_events(socketio)
 
     return app
