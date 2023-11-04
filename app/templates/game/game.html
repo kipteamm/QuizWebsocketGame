@@ -1,9 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Flask-SocketIO Test</title>
+    <title>Quiz</title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basics.css') }}">
+
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
@@ -13,6 +16,7 @@
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             const socket = io('/game');
+            let answeredQuestions = [];
 
             $('form#leave').submit(function(event) {
                 window.location.href='/home';
@@ -29,8 +33,6 @@
             });
 
             $(document).on('submit', 'form#answer', function(event) {
-                console.log('answer submitted');
-
                 socket.emit('answer', {room_id: '{{ room.room_id }}', answer: $(this).find('input[type="submit"]:focus').val()})
 
                 return false;
@@ -58,42 +60,52 @@
                 }
 
                 socket.emit('ask_question', {room_id: '{{ room.room_id }}'});
-
-                console.log('question asked')
             })
 
             socket.on('question', function(data) {
-                console.log('question received')
-
                 question(data)
             })
 
             socket.on('question_end', function(data) {
+                if (answeredQuestions.includes(data.question_id)) {
+                    return
+                }
+
+                answeredQuestions.push(data.question_id)
+
                 revealAnswer(data.answer)
 
                 setTimeout(() => {
-                    gameRoom.innerHTML = '';
-
                     if (data.owner_id != {{ user.user_id }}) {
                         return;
                     } 
 
-                    socket.emit('end_question', {room_id: '{{ room.room_id }}', 'question_id' : data.question_id.toString()});
+                    socket.emit('end_question', {room_id: '{{ room.room_id }}', 'question_id' : data.question_id});
                 }, 5000)           
+            })
+
+            socket.on('game_end', function() {
+                gameRoom.innerHTML = '';
+                
+                document.getElementById('leave').querySelector('input').style.display = 'block';
             })
         });
     </script>
 </head>
-<body>
-    <form id="leave" method="POST" action='#'>
-        <input type="submit" value="Leave game">
-    </form>
+<body class="game-room">
+    <div class="section players">
+        <form id="leave" method="POST" action='#'>
+            <input type="submit" value="Leave game">
+        </form>
 
-    <span id="player-count">{{ room.players|length }}</span>/3
+        <div class="player">
+            <span id="player-count">{{ room.players|length }}</span>/3
+        </div>
 
-    <div class="player-list" id="player-list"></div>
+        <div class="player-list" id="player-list"></div>
+    </div>
 
-    <div class="game-room" id="game-room">
+    <div class="section" id="game-room">
         <div class="start-game" id="start-game">
             <form id="startgame" method="POST" action='#'>
                 <input type="submit" value="Start game">

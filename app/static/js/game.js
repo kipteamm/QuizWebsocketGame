@@ -48,7 +48,7 @@ function startGame() {
     let seconds = 0;
 
     const interval = setInterval(() => {
-        gameRoom.innerHTML = (5 - seconds);
+        gameRoom.innerHTML = `<span class="countdown">${(5 - seconds)}</span>`;
 
         seconds++;
 
@@ -92,6 +92,7 @@ function question(question) {
 
     answer = question.answer
 }
+
 
 function revealAnswer(answer) {
     document.querySelectorAll('input').forEach(element => {

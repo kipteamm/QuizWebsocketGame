@@ -98,8 +98,6 @@ def register_events(socketio: SocketIO):
 
     @socketio.on('ask_question', namespace='/game')
     def ask_question(data):
-        game_log('info', 'ask_question received', 'game')
-
         room_id = data['room_id']
 
         room = Room.query.filter_by(room_id=room_id).first()
@@ -161,20 +159,25 @@ def register_events(socketio: SocketIO):
             db.session.commit()
 
             if user_answers == len(room.players) - 1:
-                emit('question_end', {'owner_id': room.owner_id, 'answer' : question.answer}, room=room_id, namespace='/game', broadcast=True)
+                emit('question_end', {'owner_id': room.owner_id, 'question_id' : question.question_id, 'answer' : question.answer}, room=room_id, namespace='/game', broadcast=True)
 
 
     @socketio.on('end_question', namespace='/game')
     def end_question(data):
         room_id = data['room_id']
+        question_id = data['question_id']
 
         room = Room.query.filter_by(room_id=room_id).first()
-        question = MultipleChoiceQuestion.query.filter_by(question_id=data['question_id']).first()
+        question = MultipleChoiceQuestion.query.filter_by(question_id=question_id).first()
 
-        game_log("info", str(type(data['question_id'])) + ' ' + str(data['question_id']), 'end_question')
+        game_log('info', f'{question_id} -> {question.answered}', 'end_question')
 
-        if room.question_index != question.index:
+        if question.answered:
+            game_log('info', f'this is the return statement, the end question is literally skipped now', 'end_question')
+
             return
+        
+        question.answered = True
 
         room.question_index = room.question_index + 1
 
@@ -188,8 +191,8 @@ def register_events(socketio: SocketIO):
 
         db.session.commit()
 
-        if room.question_index < 4:
+        if room.question_index < 6:
             emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
 
         else:
-            emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+            emit('game_end', room=room_id, namespace='/game', broadcast=True)

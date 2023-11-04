@@ -1,2 +1,6 @@
-<a href="/login">Login</a>
-<a href="/register">Register</a>
+{% extends "base.html" %}
+
+{% block content %}
+    <button onclick="window.location.href='/home'">Login</button>
+    <button onclick="window.location.href='/register'">Register</button>
+{% endblock %}

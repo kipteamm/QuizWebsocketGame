@@ -2,10 +2,43 @@
     display: none;
 }
 
-.game-room {
-    margin-top: 25px;
+.create-room {
+    width: 100%;
+    margin-bottom: 25px;
 }
 
-input[type="submit"] {
+.join-room {
+    display: flex;
+}
+.join-room input[type="text"] {
+    flex: 1;
+    margin-right: calc(12.5px)
+}
+
+.player {
+    margin-top: 12.5px;
+}
+
+.countdown {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+}
+
+.game-room .section#game-room {
+    height: 100%;
+}
+
+.game-room input[type="submit"] {
     display: block;
+    margin-top: 25px;
+    width: 100%;
+}
+
+@media screen and (max-width: 450px) {
+    .game-section {
+        width: calc(100vw - 50px);
+    }
 }

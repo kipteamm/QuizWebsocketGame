@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>My Flask App</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basics.css') }}">
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -15,7 +18,7 @@
     {% endwith %}
 
 
-    <div>
+    <div class="section auth">
         {% block content %}{% endblock %}
     </div>
 </body>

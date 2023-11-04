@@ -96,10 +96,11 @@ class MultipleChoiceQuestion(db.Model):
     question = db.Column(db.Text)
     answer = db.Column(db.Text)
 
+    answered = db.Column(db.Boolean, default=False)
+
     creation_timestamp = db.Column(db.Float)
 
     def __init__(self, room_id: int, question_index: int, question: str, answer: str, creation_timestamp: float):
-        self.question_id = int(str(time.time()).replace('.', ''))
         self.room_id = room_id
         self.index = question_index
         self.question = question
@@ -126,7 +127,6 @@ class Answer(db.Model):
     index = db.Column(db.Integer)
 
     def __init__(self, room_id: int, user_id: int, index: int):
-        self.answer_id = int(str(time.time()).replace('.', ''))
         self.room_id = room_id
         self.user_id = user_id
         self.index = index
