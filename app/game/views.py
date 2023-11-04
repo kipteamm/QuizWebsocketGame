@@ -25,6 +25,8 @@ def home():
 
             room = Room(current_user.id) # type: ignore
 
+            current_user.points = 0
+
             room.players.append(current_user)
 
             db.session.add(room)

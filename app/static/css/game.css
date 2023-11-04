@@ -1,3 +1,11 @@
 .start-game {
     display: none;
 }
+
+.game-room {
+    margin-top: 25px;
+}
+
+input[type="submit"] {
+    display: block;
+}

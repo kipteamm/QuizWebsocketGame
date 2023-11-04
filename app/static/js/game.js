@@ -92,3 +92,11 @@ function question(question) {
 
     answer = question.answer
 }
+
+function revealAnswer(answer) {
+    document.querySelectorAll('input').forEach(element => {
+        if (element.value !== answer) {
+            element.style.display = 'none'
+        }
+    })
+}

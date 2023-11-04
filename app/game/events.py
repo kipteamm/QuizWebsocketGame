@@ -6,22 +6,15 @@ from flask_socketio import emit
 
 from app.extensions import db
 
+from .functions import game_log, clear_game_log
+
 from .models import Room, MultipleChoiceQuestion, Answer
 
 import requests
 import time
 
 
-def ack():
-    print('message was received!')
-
-
 def register_events(socketio: SocketIO):
-    
-    @socketio.on('connect', namespace='/game')
-    def connect():
-        print('connected')
-
 
     @socketio.on('join_game', namespace='/game')
     def join_game(data):
@@ -88,6 +81,8 @@ def register_events(socketio: SocketIO):
     def start_game(data):
         room_id = data['room_id']
 
+        clear_game_log()
+
         emit('starting', room=room_id, namespace='/game', broadcast=True)
 
         time.sleep(5)
@@ -98,12 +93,12 @@ def register_events(socketio: SocketIO):
 
         db.session.commit()
 
-        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True, callback=ack)
+        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True)
 
 
     @socketio.on('ask_question', namespace='/game')
     def ask_question(data):
-        print('ask_question received')
+        game_log('info', 'ask_question received', 'game')
 
         room_id = data['room_id']
 
@@ -126,7 +121,7 @@ def register_events(socketio: SocketIO):
 
             time.sleep(15)
 
-            emit('question_end', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
+            emit('question_end', {'owner_id': room.owner_id, 'question_id' : question_object.question_id, 'answer' : question_object.answer}, room=room_id, namespace='/game', broadcast=True)
         
         else:
             emit('kick_all', room=room_id, namespace='/game', broadcast=True)
@@ -165,10 +160,8 @@ def register_events(socketio: SocketIO):
             db.session.add(user_answer)
             db.session.commit()
 
-            print(user_answers, len(room.players))
-
             if user_answers == len(room.players) - 1:
-                emit('question_end', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
+                emit('question_end', {'owner_id': room.owner_id, 'answer' : question.answer}, room=room_id, namespace='/game', broadcast=True)
 
 
     @socketio.on('end_question', namespace='/game')
@@ -176,6 +169,14 @@ def register_events(socketio: SocketIO):
         room_id = data['room_id']
 
         room = Room.query.filter_by(room_id=room_id).first()
+        question = MultipleChoiceQuestion.query.filter_by(question_id=data['question_id']).first()
+
+        game_log("info", str(type(data['question_id'])) + ' ' + str(data['question_id']), 'end_question')
+
+        if room.question_index != question.index:
+            return
+
+        room.question_index = room.question_index + 1
 
         for player in room.players:
             answer = Answer.query.filter_by(room_id=room.room_id, user_id=player.id, index=room.question_index).first()
@@ -185,9 +186,10 @@ def register_events(socketio: SocketIO):
 
         emit('update_players', {'owner_id': room.owner_id, 'players': room.get_players()}, room=room_id, namespace='/game', broadcast=True)
 
-        room.question_index = room.question_index + 1
-
         db.session.commit()
 
         if room.question_index < 4:
             emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
+
+        else:
+            emit('kick_all', room=room_id, namespace='/game', broadcast=True)

@@ -4,17 +4,8 @@ venv/
 .venv
 
 # Ignore any pycaches
-/__pycache__
-__pycache__/
 **/__pycache__/
-
-# Ignore replit files (can be removed soon)
-.replit
-.breakpoints
-replit.nix
-
-poetry.lock
-pyproject.toml
-
-# Ignore site specific files
 **/database.db
+
+# Ignore migrations folder
+app/migrations/
