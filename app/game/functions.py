@@ -28,6 +28,7 @@ def game_log(type: str, error: str, section: Optional[str]) -> None:
 
 
 def clear_game_log() -> None:
-    os.remove("game_log.txt")
+    if os.path.exists("game_log.txt"):
+        os.remove("game_log.txt")
 
     return

@@ -170,11 +170,7 @@ def register_events(socketio: SocketIO):
         room = Room.query.filter_by(room_id=room_id).first()
         question = MultipleChoiceQuestion.query.filter_by(question_id=question_id).first()
 
-        game_log('info', f'{question_id} -> {question.answered}', 'end_question')
-
         if question.answered:
-            game_log('info', f'this is the return statement, the end question is literally skipped now', 'end_question')
-
             return
         
         question.answered = True
@@ -191,7 +187,7 @@ def register_events(socketio: SocketIO):
 
         db.session.commit()
 
-        if room.question_index < 6:
+        if room.question_index < 11:
             emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
 
         else:

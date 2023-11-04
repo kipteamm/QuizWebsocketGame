@@ -33,7 +33,11 @@
             });
 
             $(document).on('submit', 'form#answer', function(event) {
-                socket.emit('answer', {room_id: '{{ room.room_id }}', answer: $(this).find('input[type="submit"]:focus').val()})
+                const value = $(this).find('input[type="submit"]:focus').val()
+
+                playerAnswered(value)
+
+                socket.emit('answer', {room_id: '{{ room.room_id }}', answer: value})
 
                 return false;
             });
@@ -52,6 +56,8 @@
 
             socket.on('starting', function() {
                 startGame()
+
+                document.querySelector('.player-count').remove()
             })
 
             socket.on('new_question', function(data) {
@@ -81,7 +87,7 @@
                     } 
 
                     socket.emit('end_question', {room_id: '{{ room.room_id }}', 'question_id' : data.question_id});
-                }, 5000)           
+                }, 4000)           
             })
 
             socket.on('game_end', function() {
@@ -98,7 +104,7 @@
             <input type="submit" value="Leave game">
         </form>
 
-        <div class="player">
+        <div class="player-count">
             <span id="player-count">{{ room.players|length }}</span>/3
         </div>
 
