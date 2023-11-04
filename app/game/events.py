@@ -119,8 +119,6 @@ def register_events(socketio: SocketIO):
 
             question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question['question'], question['correct_answer'], time.time())
 
-            room.question_index = room.question_index + 1
-
             db.session.add(question_object)
             db.session.commit()
 
@@ -128,7 +126,7 @@ def register_events(socketio: SocketIO):
 
             time.sleep(15)
 
-            emit('question_end', room=room_id, namespace='/game', broadcast=True)
+            emit('question_end', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
         
         else:
             emit('kick_all', room=room_id, namespace='/game', broadcast=True)
@@ -143,6 +141,8 @@ def register_events(socketio: SocketIO):
         question = MultipleChoiceQuestion.query.filter_by(room_id=room.room_id, index=room.question_index).first()
 
         if question:
+            room.question_index = room.question_index + 1
+
             points = 30 - round(time.time() - question.creation_timestamp)
 
             user_answers = Answer.query.filter_by(room_id=room.room_id, index=room.question_index).count()
@@ -170,7 +170,7 @@ def register_events(socketio: SocketIO):
             print(user_answers, room.players.count())
 
             if user_answers == room.players.count() - 1:
-                emit('question_end', room=room_id, namespace='/game', broadcast=True)
+                emit('question_end', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
 
 
     @socketio.on('end_question', namespace='/game')

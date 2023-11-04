@@ -70,12 +70,16 @@
                 question(data)
             })
 
-            socket.on('question_end', function() {
-                console.log('question end received')
-
+            socket.on('question_end', function(data) {
                 gameRoom.innerHTML = '';
 
-                socket.emit('end_question', {room_id: '{{ room.room_id }}', user_id: {{ user.user_id }}});
+                if (data.owner_id != {{ user.user_id }}) {
+                    return;
+                }
+
+                console.log('question end received')
+
+                socket.emit('end_question', {room_id: '{{ room.room_id }}'});
             })
         });
     </script>
