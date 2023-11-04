@@ -1,8 +1,8 @@
-"""initial migration
+"""inital migration
 
-Revision ID: 7a312f3acd96
+Revision ID: 33585bb5d9a4
 Revises: 
-Create Date: 2023-11-04 11:14:42.077092
+Create Date: 2023-11-04 15:05:16.658712
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7a312f3acd96'
+revision = '33585bb5d9a4'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,12 +40,14 @@ def upgrade():
     sa.UniqueConstraint('room_id')
     )
     op.create_table('answer',
-    sa.Column('room_id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('answer_id', sa.Integer(), nullable=False),
+    sa.Column('room_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('index', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['room_id'], ['room.room_id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('room_id', 'user_id')
+    sa.PrimaryKeyConstraint('answer_id'),
+    sa.UniqueConstraint('answer_id')
     )
     op.create_table('multiple_choice_question',
     sa.Column('question_id', sa.Integer(), nullable=False),

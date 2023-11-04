@@ -165,9 +165,9 @@ def register_events(socketio: SocketIO):
             db.session.add(user_answer)
             db.session.commit()
 
-            print(user_answers, room.players.count())
+            print(user_answers, len(room.players))
 
-            if user_answers == room.players.count() - 1:
+            if user_answers == len(room.players) - 1:
                 emit('question_end', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
 
 

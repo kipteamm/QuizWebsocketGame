@@ -118,12 +118,15 @@ class MultipleChoiceQuestion(db.Model):
 class Answer(db.Model):
     __tablename__ = "answer"
 
-    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'), primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    answer_id = db.Column(db.Integer, unique=True, primary_key=True)
+
+    room_id = db.Column(db.Integer, db.ForeignKey('room.room_id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     index = db.Column(db.Integer)
 
     def __init__(self, room_id: int, user_id: int, index: int):
+        self.answer_id = int(str(time.time()).replace('.', ''))
         self.room_id = room_id
         self.user_id = user_id
         self.index = index

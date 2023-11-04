@@ -6,7 +6,7 @@ from app.extensions import db
 
 from .functions import user_object
 
-from .models import Room, MultipleChoiceQuestion, Answer
+from .models import Room, MultipleChoiceQuestion, Answer, RoomPlayers
 
 
 game_blueprint = Blueprint('game', __name__)
@@ -81,6 +81,7 @@ def test():
     Room.query.delete()
     MultipleChoiceQuestion.query.delete()
     Answer.query.delete()
+    RoomPlayers.query.delete()
     
     db.session.commit()
 
