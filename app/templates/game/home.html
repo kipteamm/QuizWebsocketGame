@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Quiz</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basics.css') }}">
+
+    <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+</head>
+<body>
+    <div class="section game-options" id="game-options">
+        <form id="create" method="POST" action="/home">
+            <input type="submit" name="create_room" class="create-room" value="Create room">
+        </form>
+        <form class="join-room" id="join" method="POST" action="/home">
+            <input type="text" name="join_room" id="join_room" placeholder="Room ID">
+            <input type="submit" value="Join">
+        </form>
+    </div>
+</body>
+</html>

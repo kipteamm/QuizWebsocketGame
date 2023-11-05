@@ -1,0 +1,114 @@
+.start-game {
+    display: none;
+}
+
+.create-room {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.join-room {
+    display: flex;
+}
+.join-room input[type="text"] {
+    flex: 1;
+    margin-right: calc(12.5px)
+}
+
+.player-list,
+.player-count {
+    margin-top: 25px;
+}
+
+.player {
+    margin-top: 12.5px;
+}
+
+.player .player-top {
+    font-size: 20px;
+    display: flex;
+}
+.player .player-top span:first-child {
+    flex: 1;
+}
+.player p {
+    font-size: 14px;
+    color: #bbbbbb;
+    margin-top: 5px;
+}
+
+.countdown {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40px;
+}
+
+.game-room .section#game-room {
+    height: 100%;
+}
+
+.game-room .section#game-room form {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-room input[type="submit"] {
+    display: block;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.answers {
+    margin: auto 0px 25px 0px;
+}
+
+.timer {
+    width: 0%;
+    height: 2px;
+    background-color: var(--primary-clr);
+    animation: timerAnimation 15s linear;
+}
+
+@keyframes timerAnimation {
+    0% {
+        width: 0%;
+    }
+
+    100%{
+        width: 100%;
+    }
+}
+
+.timer.paused {
+    width: 100%;
+    animation-play-state: paused;
+}   
+
+p.question {
+    font-size: 20px;
+}
+
+input[type="submit"].user-answer {
+    border: 2px solid var(--primary-clr);
+    background-color: var(--primary-clr-acc);
+    box-shadow: 0px 3px 0px var(--primary-clr);
+}
+input[type="submit"].user-answer:hover {
+    border: 2px solid var(--primary-clr);
+    background-color: var(--primary-clr-acc);
+    box-shadow: 0px 3px 0px var(--primary-clr);
+}
+
+input[type="submit"].correct {
+    border: 2px solid var(--success-clr);
+    background-color: var(--success-clr-acc);
+    box-shadow: 0px 3px 0px var(--success-clr);
+}
+input[type="submit"].correct:hover {
+    border: 2px solid var(--success-clr);
+    background-color: var(--success-clr-acc);
+    box-shadow: 0px 3px 0px var(--success-clr);
+}

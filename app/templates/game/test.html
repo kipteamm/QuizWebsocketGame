@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Quiz</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basics.css') }}">
+
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+</head>
+<body class="game-room">
+    <div class="section players">
+        <form id="leave" method="POST" action='#'>
+            <input type="submit" value="Leave game">
+        </form>
+
+        <div class="player-list" id="player-list"></div>
+    </div>
+
+    <div class="section" id="game-room">
+        <form method="POST" action='#'>
+            <input class="answer" type="submit" value="Answer 1">
+            <input class="answer user-answer" type="submit" value="Answer 1">
+            <input class="answer correct" type="submit" value="Answer 1">
+            <input class="answer" type="submit" value="Answer 1">
+        </form>
+    </div>
+</body>
+</html>
