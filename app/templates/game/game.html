@@ -87,7 +87,7 @@
                     } 
 
                     socket.emit('end_question', {room_id: '{{ room.room_id }}', 'question_id' : data.question_id});
-                }, 4000)           
+                }, 2500)           
             })
 
             socket.on('game_end', function() {

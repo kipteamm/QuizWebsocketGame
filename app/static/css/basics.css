@@ -1,3 +1,12 @@
+:root {
+    --primary-bg: #20242a;
+    --secondary-bg: #3c4148;
+    --tertiary-bg: #51565d;
+
+    --primary-text: #fefefe;
+    --secondary-text: #b8b8b8;
+}
+
 body {
     background-color: #20242a;
     color: #fefefe;
@@ -6,6 +15,8 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 input {
@@ -53,7 +64,13 @@ input[type="submit"]:hover {
 
 .section {
     position: relative;
-    max-width: 400px;
+    width: 400px;
     padding: 25px 25px 0px 25px;
     margin: 0px auto;
+}
+
+@media screen and (max-width: 450px) {
+    .section {
+        width: calc(100vw - 50px);
+    }
 }

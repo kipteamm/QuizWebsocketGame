@@ -110,12 +110,21 @@ def register_events(socketio: SocketIO):
         if response.ok:
             question = response.json()[0]
 
-            question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question['question']['text'], question['correctAnswer'], time.time())
+            question_text = question['question']['text']
+            correct_answer = question['correctAnswer']
+            incorrect_answers = question['incorrectAnswers']
+
+            question_object = MultipleChoiceQuestion(room.room_id, room.question_index, question_text, correct_answer, time.time())
 
             db.session.add(question_object)
             db.session.commit()
 
-            emit('question', question, room=room_id, namespace='/game', broadcast=True)
+            print(incorrect_answers, correct_answer)
+            print(type(incorrect_answers))
+            incorrect_answers.append(correct_answer)
+            print(incorrect_answers)
+
+            emit('question', {'question' : question_text, 'answers' : incorrect_answers}, room=room_id, namespace='/game', broadcast=True)
 
             time.sleep(15)
 

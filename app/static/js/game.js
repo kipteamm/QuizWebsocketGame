@@ -95,31 +95,25 @@ function startGame() {
 
 function createQuestion(question) {
     const questionElement = document.createElement('form')
-    
+    let answerElements = '';
+
     questionElement.id = 'answer' 
     questionElement.method = "POST"
     questionElement.classList.add('question-wrapper')  
 
-    questionElement.innerHTML = `
-        <div class="timer"></div>
-        <p class="question">${question.question.text}</p>
-    `
-
-    let answers = question.incorrectAnswers
-    answers.push(question.correctAnswer)
-
-    answers = answers.sort((a, b) => 0.5 - Math.random());
+    let answers = question.answers.sort((a, b) => 0.5 - Math.random());
 
     answers.forEach(answer => {
-        const answerElement = document.createElement('input')
-
-        answerElement.classList.add('answer')
-
-        answerElement.type = 'submit'
-        answerElement.value = answer
-
-        questionElement.appendChild(answerElement)
+        answerElements += `<input type="submit" value="${answer}" class="answer">`
     })
+
+    questionElement.innerHTML = `
+        <div class="timer"></div>
+        <p class="question">${question.question}</p>
+        <div class="answers">
+            ${answerElements}
+        </div>
+    `
 
     return questionElement
 }
@@ -128,8 +122,6 @@ function createQuestion(question) {
 function question(question) {
     gameRoom.innerHTML = '';
     gameRoom.appendChild(createQuestion(question))
-
-    answer = question.answer
 }
 
 
