@@ -13,6 +13,7 @@ migrations/*
 # Replit
 .pythonlibs
 .replit
+replit.nix
 poetry.lock
 pyproject.toml
 **/__init__.py

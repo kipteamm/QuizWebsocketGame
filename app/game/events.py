@@ -119,16 +119,15 @@ def register_events(socketio: SocketIO):
             db.session.add(question_object)
             db.session.commit()
 
-            print(incorrect_answers, correct_answer)
-            print(type(incorrect_answers))
-            incorrect_answers.append(correct_answer)
-            print(incorrect_answers)
-
             emit('question', {'question' : question_text, 'answers' : incorrect_answers}, room=room_id, namespace='/game', broadcast=True)
 
+            game_log('info', "question sent", "ask_question")
+            
             time.sleep(15)
 
             emit('question_end', {'owner_id': room.owner_id, 'question_id' : question_object.question_id, 'answer' : question_object.answer}, room=room_id, namespace='/game', broadcast=True)
+
+            game_log('info', "question end", "ask_question")
         
         else:
             emit('kick_all', room=room_id, namespace='/game', broadcast=True)
