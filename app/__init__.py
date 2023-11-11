@@ -22,7 +22,7 @@ def create_app():
     app = Flask(__name__)
     app.config["DEBUG"] = True
     app.config["SECRET_KEY"] = "secret"
-    app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./database.db'
 
 
     app.register_blueprint(auth_blueprint)
