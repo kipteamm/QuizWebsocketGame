@@ -119,6 +119,8 @@ def register_events(socketio: SocketIO):
             db.session.add(question_object)
             db.session.commit()
 
+            incorrect_answers.append(correct_answer)
+
             emit('question', {'question' : question_text, 'answers' : incorrect_answers}, room=room_id, namespace='/game', broadcast=True)
 
             game_log('info', "question sent", "ask_question")

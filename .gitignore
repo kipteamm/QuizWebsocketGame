@@ -16,4 +16,5 @@ migrations/*
 replit.nix
 poetry.lock
 pyproject.toml
-**/__init__.py
+
+config.py
