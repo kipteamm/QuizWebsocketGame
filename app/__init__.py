@@ -16,7 +16,6 @@ from .main.views import main_blueprint
 
 from .extensions import db, socketio
 
-import config
 
 def create_app():
     app = Flask(__name__)
