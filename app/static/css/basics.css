@@ -75,13 +75,14 @@ input[type="submit"]:hover {
 
 .section {
     position: relative;
-    width: 400px;
+    width: 100vw;
+    box-sizing: border-box;
     padding: 25px 25px 0px 25px;
     margin: 0px auto;
 }
 
-@media screen and (max-width: 450px) {
+@media (min-width: 480px) {
     .section {
-        width: calc(100vw - 50px);
+        width: 480px;
     }
 }
