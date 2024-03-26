@@ -15,7 +15,7 @@ function createPlayer(player, ownerID) {
 
     playerElement.innerHTML = `
         <div class="player-top">
-            <span>${player.username}</span>
+            <span class="username">${player.username}</span>
             <span class="points">${player.points}</span>
         </div> 
         <p>
@@ -146,4 +146,14 @@ function revealAnswer(answer) {
             element.classList.add('correct')
         }
     })
+}
+
+function showWinner(data) {
+    if (!data) return
+
+    const player = document.getElementById(`player-${data.id}`);
+
+    player.querySelector('.username').innerText = `${data.username} WINNER`;
+
+    player.classList.add("active");
 }

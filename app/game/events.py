@@ -34,9 +34,9 @@ def register_events(socketio: SocketIO):
                     'points' : player.points
                 })
 
-            emit('update_players', {'owner_id': room.owner_id, 'players': players}, room=room_id, namespace='/game', broadcast=True)
+            emit('update_players', {'owner_id': room.owner_id, 'players': players}, room=room_id, namespace='/game', broadcast=True) # type: ignore
         else:
-            emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+            emit('kick_all', room=room_id, namespace='/game', broadcast=True) # type: ignore
 
 
     @socketio.on('leave_game', namespace='/game')
@@ -59,7 +59,7 @@ def register_events(socketio: SocketIO):
 
                 db.session.delete(room)
 
-                emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+                emit('kick_all', room=room_id, namespace='/game', broadcast=True) # type: ignore
 
             db.session.commit()
 
@@ -72,18 +72,18 @@ def register_events(socketio: SocketIO):
                     'points' : player.points
                 })
 
-            emit('update_players', {'owner_id': room.owner_id, 'players': players}, room=room_id, namespace='/game', broadcast=True)
+            emit('update_players', {'owner_id': room.owner_id, 'players': players}, room=room_id, namespace='/game', broadcast=True) # type: ignore
         else:
-            emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+            emit('kick_all', room=room_id, namespace='/game', broadcast=True) # type: ignore
 
 
     @socketio.on('start_game', namespace='/game')
     def start_game(data):
         room_id = data['room_id']
 
-        clear_game_log()
+        #clear_game_log()
 
-        emit('starting', room=room_id, namespace='/game', broadcast=True)
+        emit('starting', room=room_id, namespace='/game', broadcast=True) # type: ignore
 
         time.sleep(5)
 
@@ -91,9 +91,12 @@ def register_events(socketio: SocketIO):
 
         room.started = True
 
+        for player in room.players:
+            player.games_played += 1
+
         db.session.commit()
 
-        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True)
+        emit('new_question', {'owner_id' : room.owner_id}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
 
     @socketio.on('ask_question', namespace='/game')
@@ -121,18 +124,18 @@ def register_events(socketio: SocketIO):
 
             incorrect_answers.append(correct_answer)
 
-            emit('question', {'question' : question_text, 'answers' : incorrect_answers}, room=room_id, namespace='/game', broadcast=True)
+            emit('question', {'question' : question_text, 'answers' : incorrect_answers}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
-            game_log('info', "question sent", "ask_question")
+            #game_log('info', "question sent", "ask_question")
             
             time.sleep(15)
 
-            emit('question_end', {'owner_id': room.owner_id, 'question_id' : question_object.question_id, 'answer' : question_object.answer}, room=room_id, namespace='/game', broadcast=True)
+            emit('question_end', {'owner_id': room.owner_id, 'question_id' : question_object.question_id, 'answer' : question_object.answer}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
-            game_log('info', "question end", "ask_question")
+            #game_log('info', "question end", "ask_question")
         
         else:
-            emit('kick_all', room=room_id, namespace='/game', broadcast=True)
+            emit('kick_all', room=room_id, namespace='/game', broadcast=True) # type: ignore
 
 
     @socketio.on('answer', namespace='/game')
@@ -169,7 +172,7 @@ def register_events(socketio: SocketIO):
             db.session.commit()
 
             if user_answers == len(room.players) - 1:
-                emit('question_end', {'owner_id': room.owner_id, 'question_id' : question.question_id, 'answer' : question.answer}, room=room_id, namespace='/game', broadcast=True)
+                emit('question_end', {'owner_id': room.owner_id, 'question_id' : question.question_id, 'answer' : question.answer}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
 
     @socketio.on('end_question', namespace='/game')
@@ -193,12 +196,31 @@ def register_events(socketio: SocketIO):
             if not answer:
                 player.points += 0
 
-        emit('update_players', {'owner_id': room.owner_id, 'players': room.get_players()}, room=room_id, namespace='/game', broadcast=True)
+        emit('update_players', {'owner_id': room.owner_id, 'players': room.get_players()}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
         db.session.commit()
 
         if room.question_index < 11:
-            emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True)
+            emit('new_question', {'owner_id': room.owner_id}, room=room_id, namespace='/game', broadcast=True) # type: ignore
 
         else:
-            emit('game_end', room=room_id, namespace='/game', broadcast=True)
+            most_points, winner = 0, None
+
+            for player in room.players:
+                if player.points > most_points:
+                    most_points = player.points
+
+                    winner = player
+
+                player.points = 0
+
+            winner_data = {}
+
+            if winner:
+                winner.victories += 1 
+
+                winner_data = {'id' : winner.id, 'username' : winner.username}
+
+            db.session.commit()
+
+            emit('game_end', winner_data, room=room_id, namespace='/game', broadcast=True) # type: ignore

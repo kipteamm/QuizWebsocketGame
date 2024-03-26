@@ -93,8 +93,10 @@
                 }, 2500)           
             })
 
-            socket.on('game_end', function() {
+            socket.on('game_end', function(data) {
                 gameRoom.innerHTML = '';
+
+                showWinner(data)
                 
                 document.getElementById('leave').querySelector('input').style.display = 'block';
             })

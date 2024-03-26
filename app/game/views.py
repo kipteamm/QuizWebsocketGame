@@ -25,8 +25,6 @@ def home():
 
             room = Room(current_user.id) # type: ignore
 
-            current_user.points = 0
-
             room.players.append(current_user)
 
             db.session.add(room)
@@ -63,8 +61,6 @@ def game():
     if room is None:
         return redirect('home')
     
-    current_user.points = 0
-    
     if current_user not in room.players:
         if len(room.players) == 3:
             flash('This room is full.', 'error')
@@ -76,6 +72,11 @@ def game():
 
     return render_template('game/game.html', user=user_object(current_user), room=room.to_dict()) # type: ignore
 
+
+@game_blueprint.route('/profile', methods=['GET'])
+@login_required
+def profile():
+    return render_template('game/profile.html', user=current_user)
 
 @game_blueprint.route('/test', methods=['GET'])
 @login_required

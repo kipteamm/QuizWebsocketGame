@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Quiz</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/basics.css') }}">
+</head>
+<body>
+    <div class="section">
+        <button onclick="window.location.href='/home'">Back</button>
+
+        <h2>{{ user.username }}</h2>
+        <ul>
+            <li>Games won: <b>{{ user.victories }}</b></li>
+            <li>Games played: <b>{{ user.games_played }}</b></li>
+        </ul>
+    </div>
+</body>
+</html>

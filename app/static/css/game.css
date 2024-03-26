@@ -24,6 +24,10 @@
     margin-top: 12.5px;
 }
 
+.player.active .username {
+    color: var(--primary-clr)
+}
+
 .player .player-top {
     font-size: 20px;
     display: flex;
