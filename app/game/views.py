@@ -35,18 +35,17 @@ def home():
         if 'join_room' in request.form:
             room = Room.query.filter_by(room_id=request.form.get('join_room')).first()
 
-            if room:
-                if len(room.players) == 3:
-                    flash('This room is full.', 'error')
+            if not room:
+                flash('No room found with this ID.', 'error')
 
-                    return render_template('game/home.html')
-
-                return redirect(f'game?id={room.room_id}')
+                return render_template('game/home.html')
             
-            flash('No room found with this ID.', 'error')
+            if len(room.players) == 3:
+                flash('This room is full.', 'error')
 
-            return render_template('game/home.html')
+                return render_template('game/home.html')
 
+            return redirect(f'game?id={room.room_id}')
 
     return render_template('game/home.html')
 

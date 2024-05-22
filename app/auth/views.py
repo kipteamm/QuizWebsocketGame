@@ -58,14 +58,14 @@ def login():
         
         user = User.authenticate(username, password)
         
-        if user:
-            login_user(user)
-            
-            flash('Login successful. Welcome back!', 'success')
-            
-            return redirect(url_for('game.home'))
-        else:
+        if not user:
             flash('Invalid username or password', 'error')
             return render_template('auth/login.html')
+        
+        login_user(user)
+            
+        flash('Login successful. Welcome back!', 'success')
+            
+        return redirect(url_for('game.home'))
 
     return render_template('auth/login.html')
