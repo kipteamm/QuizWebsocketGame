@@ -13,5 +13,5 @@ python-engineio
 python-socketio
 six==1.11.0
 Werkzeug==3.0.3
-zipp==3.8.1
+zipp==3.19.1
 Flask-Migrate==4.0.4
